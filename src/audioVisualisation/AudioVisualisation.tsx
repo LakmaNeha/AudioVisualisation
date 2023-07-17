@@ -1,7 +1,6 @@
 import React from "react";
 
 const AudioVisualisation = () => {
-
   const decodeAudioFile = (file) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
@@ -32,7 +31,13 @@ const AudioVisualisation = () => {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     console.log(file, "##file");
-    decodeAudioFile(file);
+    decodeAudioFile(file)
+      .then((decodedAudioData) => {
+        console.log("Audio file decoded:", decodedAudioData);
+      })
+      .catch(function (error) {
+        console.error("Error decoding audio file:", error);
+      });
   };
 
   return (
