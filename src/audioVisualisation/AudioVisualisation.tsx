@@ -3,7 +3,7 @@ import React from "react";
 const AudioVisualisation = () => {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
-    console.log(file, "##git addfile");
+    console.log(file, "##file");
   };
 
   return (
