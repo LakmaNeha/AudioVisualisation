@@ -1,13 +1,28 @@
-import React, {useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Highcharts, { getOptions } from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 const AudioVisualisation = () => {
-
   const [waveformPoints, setWaveformPoints] = useState<Array<any>>([]);
   const [chartOptions, setChartOptions] = useState<any>({});
 
   const getOptions = () => {
+    const generateDownSampledData = () => {
+      const originalData = (waveformPoints as any)?.map((point) => [
+        point.x,
+        point.y,
+      ]);
+      const desiredDataPoints = 1000;
+      const samplingInterval = Math.floor(
+        originalData?.length / desiredDataPoints,
+      );
+
+      const sampledData: any = [];
+      for (let i = 0; i < originalData?.length; i += samplingInterval) {
+        sampledData.push(originalData[i]);
+      }
+      return sampledData;
+    };
     return {
       chart: {
         type: "line",
@@ -27,11 +42,11 @@ const AudioVisualisation = () => {
       },
       legend: {
         enabled: false,
-      },git add
+      },
       series: [
         {
-          data: waveformPoints || [],
-          lineWidth: 4,
+          data: generateDownSampledData() || [],
+          lineWidth: 1,
           color: "green",
         },
       ],
@@ -66,7 +81,7 @@ const AudioVisualisation = () => {
   };
   const convertAudioToWaveformPoints = (audioData) => {
     const waveformPoints: any = [];
-  
+
     for (let i = 0; i < audioData.length; i++) {
       const point = {
         x: i,
@@ -74,7 +89,7 @@ const AudioVisualisation = () => {
       };
       waveformPoints.push(point);
     }
-  
+
     return waveformPoints;
   };
 
@@ -85,9 +100,9 @@ const AudioVisualisation = () => {
       .then((decodedAudioData) => {
         console.log("Audio file decoded:", decodedAudioData);
         const channelData = (decodedAudioData as any).getChannelData(0);
-        console.log('channelData:', channelData);
+        console.log("channelData:", channelData);
         const waveformPoints = convertAudioToWaveformPoints(channelData);
-        console.log('waveformPoints:', waveformPoints);
+        console.log("waveformPoints:", waveformPoints);
         setWaveformPoints(waveformPoints);
       })
       .catch(function (error) {
@@ -95,10 +110,10 @@ const AudioVisualisation = () => {
       });
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const options = getOptions();
     setChartOptions(options);
-  },[waveformPoints])
+  }, [waveformPoints]);
 
   return (
     <div>
