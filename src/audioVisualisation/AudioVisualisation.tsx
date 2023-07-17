@@ -1,4 +1,6 @@
 import React from "react";
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 
 const AudioVisualisation = () => {
   const decodeAudioFile = (file) => {
@@ -44,6 +46,7 @@ const AudioVisualisation = () => {
     <div>
       <div>AudioVisualisation</div>
       <input type="file" onChange={handleFileUpload} />
+      <HighchartsReact highcharts={Highcharts} options={{}} />
     </div>
   );
 };
