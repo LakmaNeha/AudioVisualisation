@@ -3,7 +3,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 import { convertAudioToWaveformPoints, getOptions } from "./helpers";
-import AudioPlayer from "./audioPlayer/AudioPlayer";
+import AudioPlayer from "./audioPlayer/AudioPlayer.tsx";
 
 import "./AudioVisualisation.css";
 
