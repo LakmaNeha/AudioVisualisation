@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
-import Highcharts, { getOptions } from "highcharts";
+import React, { useState, useEffect} from "react";
+import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
 const AudioVisualisation = () => {
   const [waveformPoints, setWaveformPoints] = useState<Array<any>>([]);
   const [chartOptions, setChartOptions] = useState<any>({});
+  const [audioPlayer, setAudioPlayer] = useState<any>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [volume, setVolume] = useState<number>(1.0);
 
   const getOptions = () => {
     const generateDownSampledData = () => {
@@ -25,7 +28,7 @@ const AudioVisualisation = () => {
     };
     return {
       chart: {
-        type: "line",
+        type: "line",  
       },
       title: {
         text: "Waveform",
@@ -53,6 +56,28 @@ const AudioVisualisation = () => {
     };
   };
 
+  const playAudio = () => {
+    if (audioPlayer) {
+      audioPlayer.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const pauseAudio = () => {
+    if (audioPlayer) {
+      audioPlayer.pause();
+      setIsPlaying(false);
+  };
+}
+
+  const handleVolumeChange = (e) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (audioPlayer) {
+      audioPlayer.volume = newVolume;
+    }
+  };
+
   const decodeAudioFile = (file) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
@@ -64,6 +89,10 @@ const AudioVisualisation = () => {
           arrayBuffer,
           (decodedAudioBuffer) => {
             console.log(decodedAudioBuffer, "#decodedAudioBuffer");
+            const audioPlayer = new Audio();
+            audioPlayer.src = URL.createObjectURL(file);
+            audioPlayer.volume = volume;
+            setAudioPlayer(audioPlayer);
             resolve(decodedAudioBuffer);
           },
           (error) => {
@@ -115,10 +144,26 @@ const AudioVisualisation = () => {
     setChartOptions(options);
   }, [waveformPoints]);
 
+
   return (
     <div>
       <div>AudioVisualisation</div>
       <input type="file" onChange={handleFileUpload} />
+      {audioPlayer && (
+        <div>
+          <button onClick={isPlaying ? pauseAudio : playAudio}>
+            {isPlaying ? "Pause" : "Play"}
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={handleVolumeChange}
+          />
+        </div>
+      )}
       <HighchartsReact highcharts={Highcharts} options={chartOptions} />
     </div>
   );
