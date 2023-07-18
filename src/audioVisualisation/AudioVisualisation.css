@@ -1,0 +1,43 @@
+.audioVisualisationApp {
+  height: 100vh;
+  background: linear-gradient(to bottom, #ffcc99 0%, #ff9966 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.audioInput {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+input {
+  margin-left: 30px;
+}
+.audioPlayer {
+  margin: 20px 0 20px 0;
+  display: flex;
+  align-items: center;
+}
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+}
+.highchart {
+  width: 90%;
+}
+button {
+  height: 40px;
+  min-width: 100px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 20px;
+  background-color: #26cbd7;
+  color: #ffffff;
+  font-weight: bold;
+
+  &:hover {
+    color: #ffffff;
+    background-color: #009094;
+  }
+}

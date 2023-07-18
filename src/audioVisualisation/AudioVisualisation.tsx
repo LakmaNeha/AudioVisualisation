@@ -1,82 +1,18 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+
+import { convertAudioToWaveformPoints, getOptions } from "./helpers";
+import AudioPlayer from "./audioPlayer/AudioPlayer";
+
+import "./AudioVisualisation.css";
+
 
 const AudioVisualisation = () => {
   const [waveformPoints, setWaveformPoints] = useState<Array<any>>([]);
   const [chartOptions, setChartOptions] = useState<any>({});
   const [audioPlayer, setAudioPlayer] = useState<any>(null);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(1.0);
-
-  const getOptions = () => {
-    const generateDownSampledData = () => {
-      const originalData = (waveformPoints as any)?.map((point) => [
-        point.x,
-        point.y,
-      ]);
-      const desiredDataPoints = 1000;
-      const samplingInterval = Math.floor(
-        originalData?.length / desiredDataPoints,
-      );
-
-      const sampledData: any = [];
-      for (let i = 0; i < originalData?.length; i += samplingInterval) {
-        sampledData.push(originalData[i]);
-      }
-      return sampledData;
-    };
-    return {
-      chart: {
-        type: "line",  
-      },
-      title: {
-        text: "Waveform",
-      },
-      xAxis: {
-        title: {
-          text: "Time",
-        },
-      },
-      yAxis: {
-        title: {
-          text: "Amplitude",
-        },
-      },
-      legend: {
-        enabled: false,
-      },
-      series: [
-        {
-          data: generateDownSampledData() || [],
-          lineWidth: 1,
-          color: "green",
-        },
-      ],
-    };
-  };
-
-  const playAudio = () => {
-    if (audioPlayer) {
-      audioPlayer.play();
-      setIsPlaying(true);
-    }
-  };
-
-  const pauseAudio = () => {
-    if (audioPlayer) {
-      audioPlayer.pause();
-      setIsPlaying(false);
-  };
-}
-
-  const handleVolumeChange = (e) => {
-    const newVolume = parseFloat(e.target.value);
-    setVolume(newVolume);
-    if (audioPlayer) {
-      audioPlayer.volume = newVolume;
-    }
-  };
 
   const decodeAudioFile = (file) => {
     return new Promise((resolve, reject) => {
@@ -108,19 +44,6 @@ const AudioVisualisation = () => {
       fileReader.readAsArrayBuffer(file);
     });
   };
-  const convertAudioToWaveformPoints = (audioData) => {
-    const waveformPoints: any = [];
-
-    for (let i = 0; i < audioData.length; i++) {
-      const point = {
-        x: i,
-        y: audioData[i],
-      };
-      waveformPoints.push(point);
-    }
-
-    return waveformPoints;
-  };
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -140,31 +63,27 @@ const AudioVisualisation = () => {
   };
 
   useEffect(() => {
-    const options = getOptions();
+    const options = getOptions(waveformPoints);
     setChartOptions(options);
   }, [waveformPoints]);
 
-
   return (
-    <div>
-      <div>AudioVisualisation</div>
-      <input type="file" onChange={handleFileUpload} />
+    <div className="audioVisualisationApp">
+      <h1>AudioVisualisation</h1>
+      <div className="audioInput">
+        <div>Please upload an audio file here.</div>
+        <input type="file" onChange={handleFileUpload} />
+      </div>
       {audioPlayer && (
-        <div>
-          <button onClick={isPlaying ? pauseAudio : playAudio}>
-            {isPlaying ? "Pause" : "Play"}
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.01"
-            value={volume}
-            onChange={handleVolumeChange}
-          />
-        </div>
+        <AudioPlayer
+          volume={volume}
+          setVolume={setVolume}
+          audioPlayer={audioPlayer}
+        />
       )}
-      <HighchartsReact highcharts={Highcharts} options={chartOptions} />
+      <div className="highchart">
+        <HighchartsReact highcharts={Highcharts} options={chartOptions} />
+      </div>
     </div>
   );
 };
